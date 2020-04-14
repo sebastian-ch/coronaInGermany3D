@@ -23,7 +23,7 @@
             height: 650px;
             bottom: 0;
         }
-        h1 {
+        h1, h2 {
             text-align: center;
         }
     </style>
@@ -32,7 +32,8 @@
 
 <body>
 
-    <h1>Germany CoVID-19 Cases as of 8/4/2020 (WIP)</h1>
+    <h1>Germany CoVID-19 Cases</h1>
+    <h2 id='title'></h2>
     <div id="map"></div>
 
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js'></script>
@@ -66,14 +67,32 @@
                     break;
                 }
             }
-            d3.json('geojsons/ger2.geojson').then(function(geojson) {
-                addLayer(geojson);
+            d3.json('https://opendata.arcgis.com/datasets/917fc37a709542548cc3be077a786c17_0.geojson').then(function(geojson) {
+
+                
+                addData(geojson);
 
             })
 
         })
 
+        function addData(geojson) {
+
+            for (var x in geojson.features) {
+                geojson.features[x].properties.cases_aga =  geojson.features[x].properties.cases * 10;
+            }
+
+            addLayer(geojson);
+
+        }
+
+        
+
         function addLayer(geojson) {
+
+            console.log(geojson);
+
+            document.getElementById('title').innerHTML = "last updated: " + geojson.features[0].properties.last_update;
 
             var layer1 = map.addLayer({
 
