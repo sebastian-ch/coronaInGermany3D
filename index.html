@@ -23,8 +23,15 @@
             height: 650px;
             bottom: 0;
         }
-        h1, h2 {
+
+        h1,
+        h2 {
             text-align: center;
+        }
+
+        .mapboxgl-popup {
+            max-width: 400px;
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
         }
     </style>
 
@@ -68,8 +75,6 @@
                 }
             }
             d3.json('https://opendata.arcgis.com/datasets/917fc37a709542548cc3be077a786c17_0.geojson').then(function(geojson) {
-
-                
                 addData(geojson);
 
             })
@@ -79,17 +84,16 @@
         function addData(geojson) {
 
             for (var x in geojson.features) {
-                geojson.features[x].properties.cases_aga =  geojson.features[x].properties.cases * 10;
+                geojson.features[x].properties.cases_aga = geojson.features[x].properties.cases * 10;
             }
 
             addLayer(geojson);
 
         }
 
-        
+
 
         function addLayer(geojson) {
-
             console.log(geojson);
 
             document.getElementById('title').innerHTML = "last updated: " + geojson.features[0].properties.last_update;
@@ -129,6 +133,31 @@
                 'tolerance': 0.1
 
             }, labelLayers);
+
+
+
+            map.on('click', 'germany', function(e) {
+
+                var name = e.features[0].properties.GEN;
+                var cases = e.features[0].properties.cases;
+
+                //console.log(cases);
+                //console.log(e.features[0].properties.GEN);
+                new mapboxgl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(name + ": " + cases + " cases.")
+                    .addTo(map);
+
+
+            })
+
+            map.on('mouseenter', 'germany', function() {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            map.on('mouseleave', 'places', function() {
+                map.getCanvas().style.cursor = '';
+            });
 
         }
     </script>
